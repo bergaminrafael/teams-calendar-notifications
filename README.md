@@ -12,8 +12,40 @@ Indicador e cartão persistente para reuniões Teams agendadas no GNOME 50. O Te
 
 1. Mantenha `graphApi.enabled: true` e `mqtt.commandTopic: "command"` na configuração do Teams for Linux.
 2. Crie uma credencial MQTT **separada** para o serviço: leitura em `teams/calendar`, escrita em `teams/command`. Guarde a senha com `pass insert mqtt/teams-calendar`; a primeira linha da entrada deve ser a senha. A credencial do Teams continua com seu acesso próprio. Use TLS e ACL no broker.
-3. Copie `config.example.json` para `~/.config/teams-calendar-notification/config.json`, substitua endereço, usuário e `passwordEntry`, e defina permissão `0600`. O serviço chama `pass show` sem shell ao iniciar e nunca grava a senha no snapshot. `caFile` é opcional para uma autoridade certificadora privada.
+3. Copie `config.example.json` para `~/.config/teams-calendar-notification/config.json`, substitua endereço, usuário e `passwordEntry`, e defina permissão `0600`. O serviço chama `pass show` sem shell ao iniciar e nunca grava a senha no snapshot. Configure `caFile` conforme a seção abaixo.
 4. Instale a dependência em um ambiente virtual no projeto: `uv venv .venv --python /usr/bin/python3` e `uv pip install --python .venv/bin/python -r requirements.txt`. Neste Ubuntu, `python3 -m venv` requer o pacote adicional `python3.14-venv`; `uv` já está disponível.
+
+### Certificado da CA MQTT
+
+O arquivo `ca.crt` é o **certificado público da autoridade certificadora (CA)** que assinou o certificado TLS do broker MQTT. Ele não contém a chave privada e não é usado diretamente pela extensão GNOME: o serviço Python o carrega por `caFile` ao conectar a um `brokerUrl` com `mqtts://`. A configuração atual aponta para `ca.crt` na raiz deste projeto; o arquivo é local e está fora do Git. Como essa CA não está no repositório de confiança do sistema, `caFile` é necessário para a conexão atual. Se o broker usar um certificado de uma CA pública já confiável pelo sistema, omita `caFile`.
+
+Para configurar outro cliente, obtenha o **certificado da CA que assinou o certificado do broker** com quem administra o MQTT. Não gere uma CA nova apenas no cliente: ela não validará o certificado já instalado no broker. Guarde o certificado PEM em um caminho estável e informe o caminho absoluto no `config.json`:
+
+```json
+{
+  "brokerUrl": "mqtts://broker.example.org:8883",
+  "caFile": "/caminho/absoluto/para/ca.crt"
+}
+```
+
+Se você também administra o broker e precisa criar uma CA própria, faça isso em um diretório privado **fora deste repositório**. O comando abaixo cria `ca.crt` e uma `ca.key` protegida por senha; o certificado TLS do broker ainda precisa ser emitido por essa CA e conter o nome do host usado em `brokerUrl` no campo Subject Alternative Name (SAN):
+
+```sh
+openssl req -new -x509 -newkey rsa:4096 -sha256 -days 3650 \
+  -keyout ca.key -out ca.crt -subj '/CN=Minha CA MQTT' \
+  -addext 'basicConstraints=critical,CA:TRUE' \
+  -addext 'keyUsage=critical,keyCertSign,cRLSign'
+```
+
+Copie **somente `ca.crt`** para a máquina que executa este serviço. Mantenha `ca.key` privada; ela não deve ficar junto da extensão nem ser enviada ao GitHub. Depois de configurar o certificado do broker, confira a conexão TLS, substituindo host e caminho pelos valores reais:
+
+```sh
+openssl s_client -connect broker.example.org:8883 \
+  -servername broker.example.org -verify_hostname broker.example.org \
+  -CAfile /caminho/absoluto/para/ca.crt -verify_return_error -brief </dev/null
+```
+
+Veja também a [documentação TLS do Mosquitto](https://mosquitto.org/man/mosquitto-tls-7.html) para emitir o certificado do broker e a [documentação do Paho MQTT](https://eclipse.dev/paho/files/paho.mqtt.python/html/client.html#paho.mqtt.client.Client.tls_set) para o comportamento de `caFile`.
 
 ## Executar
 
