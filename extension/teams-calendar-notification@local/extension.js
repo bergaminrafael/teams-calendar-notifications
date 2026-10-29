@@ -46,12 +46,12 @@ export default class TeamsCalendarNotification extends Extension {
         if (!this._actions || Array.isArray(this._actions) || typeof this._actions !== 'object') this._actions = {};
         this._snapshot = readJson(SNAPSHOT, null);
         this._indicator = new PanelMenu.Button(0.0, 'Reuniões Teams', false);
-        const row = new St.BoxLayout({style_class: 'panel-status-menu-box'});
+        const row = new St.BoxLayout({style_class: 'panel-status-menu-box teams-calendar-panel-row'});
         const iconDir = this.dir.get_child('icons');
         this._calendarIcons = Array.from({length: 10}, (_, number) =>
             new Gio.FileIcon({file: iconDir.get_child(`calendar-${number}.svg`)}));
         this._plainCalendarIcon = new Gio.FileIcon({file: iconDir.get_child('calendar.svg')});
-        this._icon = new St.Icon({gicon: this._calendarIcons[0], style_class: 'system-status-icon'});
+        this._icon = new St.Icon({gicon: this._calendarIcons[0], style_class: 'system-status-icon teams-calendar-panel-icon'});
         this._countLabel = new St.Label({text: '', y_align: Clutter.ActorAlign.CENTER, visible: false});
         this._label = new St.Label({text: '', y_align: Clutter.ActorAlign.CENTER, style_class: 'teams-calendar-panel-label'});
         this._label.clutter_text.set_ellipsize(Pango.EllipsizeMode.END);
