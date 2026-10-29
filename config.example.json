@@ -1,0 +1,7 @@
+{
+  "brokerUrl": "mqtts://broker.example.org:8883",
+  "username": "teams-calendar-reader",
+  "passwordEntry": "mqtt/teams-calendar",
+  "topicPrefix": "teams",
+  "clientId": "teams-calendar-notification"
+}

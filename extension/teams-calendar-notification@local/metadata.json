@@ -1,0 +1,6 @@
+{
+  "uuid": "teams-calendar-notification@local",
+  "name": "Teams Calendar Notification",
+  "description": "Indicador e alerta persistente para reuniões Teams agendadas",
+  "shell-version": ["50"]
+}

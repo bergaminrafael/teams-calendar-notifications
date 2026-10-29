@@ -1,0 +1,12 @@
+[Unit]
+Description=Teams calendar snapshot via MQTT
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/meus-projetos/teams-calendar-notification/.venv/bin/python %h/meus-projetos/teams-calendar-notification/service/calendar_sync.py
+Restart=on-failure
+RestartSec=60
+
+[Install]
+WantedBy=default.target

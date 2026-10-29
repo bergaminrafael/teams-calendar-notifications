@@ -1,0 +1,25 @@
+.teams-calendar-card {
+  background-color: #24272e;
+  color: #ffffff;
+  border-radius: 12px;
+  border: 2px solid #8d82f4;
+  padding: 16px;
+  width: 340px;
+  spacing: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.teams-calendar-title { font-weight: bold; font-size: 15px; }
+.teams-calendar-subtitle { color: #dadada; }
+.teams-calendar-actions { spacing: 8px; }
+.teams-calendar-action {
+  border-radius: 6px;
+  padding: 7px 10px;
+  background-color: #454957;
+}
+.teams-calendar-action:hover, .teams-calendar-action:focus { background-color: #656a7d; }
+.teams-calendar-panel-label { max-width: 220px; }
+.teams-calendar-panel-active { color: #c9c2ff; font-weight: bold; }
+.teams-calendar-day-heading { font-size: 90%; }
+.teams-calendar-sync-badge { color: #e5a50a; icon-size: 10px; }
+.teams-calendar-diagnostics { width: 600px; height: 320px; }
